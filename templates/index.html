@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> HRQuiz Noaptea Companiilor 2026</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 48px auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+      padding: 32px;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 2rem;
+    }
+
+    p {
+      margin-top: 0;
+      color: var(--muted);
+    }
+
+    .name-wrap {
+      margin-top: 20px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      margin-top: 8px;
+      background: white;
+      box-sizing: border-box;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 28px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <img
+          src="{{ url_for('static', filename='logo.png') }}"
+          alt="Piaxo Logo"
+          style="max-width:180px; height:auto; display:block; margin:0 auto 10px;"
+        />
+      </div>
+      <h1>🎯 HR Quiz Noaptea Companiilor 2026</h1>
+      <p>Enter your name, email and phone number, then continue to the questions.</p>
+
+      <form method="get" action="/quiz">
+        <div class="name-wrap">
+          <label for="name"><strong>Name</strong></label>
+          <input class="form-control" id="name" name="name" type="text" placeholder="John Doe" required />
+        </div>
+
+        <div class="name-wrap">
+          <label for="email"><strong>Email</strong></label>
+          <input class="form-control" id="email" name="email" type="email" placeholder="john@example.com" required />
+        </div>
+
+        <div class="name-wrap">
+          <label for="phone"><strong>Phone Number</strong></label>
+          <input class="form-control" id="phone" name="phone" type="tel" placeholder="0712 345 678" required />
+        </div>
+
+        <button type="submit">Start Quiz</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

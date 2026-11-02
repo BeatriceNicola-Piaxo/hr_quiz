@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Questions</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 48px auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+      padding: 32px;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .welcome {
+      margin-bottom: 24px;
+      color: var(--text);
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    .category-header {
+      margin: 0 0 24px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .category-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: #dbeafe;
+      border-radius: 999px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+    }
+
+    .category-header h2 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    .question {
+      margin-top: 24px;
+    }
+
+    .question h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      white-space: pre-line;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    label.option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    input[type="radio"] {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <img
+          src="{{ url_for('static', filename='logo.png') }}"
+          alt="Piaxo Logo"
+          style="max-width:180px; height:auto; display:block; margin:0 auto 10px;"
+        />
+      </div>
+
+      <p class="welcome">Welcome, {{ name }}!</p>
+
+      <div class="category-header">
+        <div class="category-badge">Category {{ page_num + 1 }} of {{ total_pages }}</div>
+        <h2>{{ category }}</h2>
+      </div>
+
+      <form action="{{ url_for('submit_quiz_page') }}" method="post">
+        <input type="hidden" name="page_num" value="{{ page_num }}" />
+
+        {% for question in questions %}
+          <div class="question">
+            <h3>{{ loop.index }}. {{ question.question }}</h3>
+            <div class="options">
+              {% for option in question.options %}
+                <label class="option">
+                  <input type="radio" name="q_{{ question.id }}" value="{{ option }}" required />
+                  <span>{{ option }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="actions">
+          <button type="submit">{{ 'Finish Quiz' if is_last_page else 'Next Category' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

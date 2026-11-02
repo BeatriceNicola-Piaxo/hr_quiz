@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Results</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 48px auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+      padding: 32px;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 2rem;
+    }
+
+    .subhead {
+      margin: 0 0 24px;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8fafc;
+    }
+
+    .total {
+      margin-top: 24px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .summary {
+      margin-top: 16px;
+      color: var(--muted);
+    }
+
+    button {
+      margin-top: 28px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    a {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <img
+          src="{{ url_for('static', filename='logo.png') }}"
+          alt="Piaxo Logo"
+          style="max-width:180px; height:auto; display:block; margin:0 auto 10px;"
+        />
+      </div>
+      <h1>🎯 Quiz Complete</h1>
+      <p class="subhead">Thanks, {{ name }}! Here is your final score breakdown.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Score</th>
+            <th>Questions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in category_scores %}
+            <tr>
+              <td>{{ row.category }}</td>
+              <td>{{ row.score }} / {{ row.total }}</td>
+              <td>{{ row.total }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="total">Total score: {{ total_score }} / {{ total_questions }}</div>
+      <div class="summary">You answered {{ total_score }} out of {{ total_questions }} questions correctly across all categories.</div>
+
+      <a href="{{ url_for('index') }}">
+        <button type="button">Return to Start</button>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
