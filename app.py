@@ -76,6 +76,16 @@ QUESTION_COUNT_PER_CATEGORY = 3
 CATEGORY_ORDER = list(QUESTION_POOLS.keys())
 QUESTION_PAGE_COUNT = 8
 ALL_QUESTIONS = [question for pool in QUESTION_POOLS.values() for question in pool]
+BADGE_TEXTS = [
+    "Dummy page badge 1",
+    "Dummy page badge 2",
+    "Dummy page badge 3",
+    "Dummy page badge 4",
+    "Dummy page badge 5",
+    "Dummy page badge 6",
+    "Dummy page badge 7",
+    "Dummy page badge 8",
+]
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "quiz-secret-key")
@@ -178,6 +188,7 @@ def quiz_category_page(page_num):
         return redirect(url_for("quiz_results"))
 
     question = quiz_state[page_num]
+    badge_text = BADGE_TEXTS[page_num] if page_num < len(BADGE_TEXTS) else f"Page {page_num + 1}"
     return render_template(
         "quiz.html",
         name=participant["name"],
@@ -187,6 +198,7 @@ def quiz_category_page(page_num):
         total_pages=len(quiz_state),
         is_last_page=(page_num == len(quiz_state) - 1),
         question=question,
+        badge_text=badge_text,
     )
 
 
