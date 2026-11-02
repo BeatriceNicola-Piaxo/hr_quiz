@@ -46,14 +46,6 @@
       text-align: center;
     }
 
-    .question-header {
-      margin: 0 0 24px;
-      padding: 16px 18px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #f8fafc;
-    }
-
     .question {
       margin-top: 24px;
     }
@@ -121,8 +113,6 @@
       </div>
 
       <p class="welcome">Welcome, {{ name }}!</p>
-
-      <div class="question-header"></div>
 
       <form action="{{ url_for('submit_quiz_page') }}" method="post">
         <input type="hidden" name="page_num" value="{{ page_num }}" />
