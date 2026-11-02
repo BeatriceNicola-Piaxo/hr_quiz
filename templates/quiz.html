@@ -39,13 +39,6 @@
       padding: 32px;
     }
 
-    h1 {
-      margin-top: 0;
-      margin-bottom: 8px;
-      font-size: 2rem;
-      text-align: center;
-    }
-
     .welcome {
       margin-bottom: 24px;
       color: var(--text);
@@ -53,7 +46,7 @@
       text-align: center;
     }
 
-    .category-header {
+    .question-header {
       margin: 0 0 24px;
       padding: 16px 18px;
       border: 1px solid var(--border);
@@ -61,7 +54,7 @@
       background: #f8fafc;
     }
 
-    .category-badge {
+    .question-badge {
       display: inline-block;
       font-size: 0.75rem;
       font-weight: 700;
@@ -74,7 +67,7 @@
       margin-bottom: 10px;
     }
 
-    .category-header h2 {
+    .question-header h2 {
       margin: 0;
       font-size: 1.6rem;
     }
@@ -147,30 +140,27 @@
 
       <p class="welcome">Welcome, {{ name }}!</p>
 
-      <div class="category-header">
-        <div class="category-badge">Category {{ page_num + 1 }} of {{ total_pages }}</div>
-        <h2>{{ category }}</h2>
+      <div class="question-header">
+        <div class="question-badge">Question {{ page_num + 1 }} of {{ total_pages }}</div>
       </div>
 
       <form action="{{ url_for('submit_quiz_page') }}" method="post">
         <input type="hidden" name="page_num" value="{{ page_num }}" />
 
-        {% for question in questions %}
-          <div class="question">
-            <h3>{{ loop.index }}. {{ question.question }}</h3>
-            <div class="options">
-              {% for option in question.options %}
-                <label class="option">
-                  <input type="radio" name="q_{{ question.id }}" value="{{ option }}" required />
-                  <span>{{ option }}</span>
-                </label>
-              {% endfor %}
-            </div>
+        <div class="question">
+          <h3>{{ question.question }}</h3>
+          <div class="options">
+            {% for option in question.options %}
+              <label class="option">
+                <input type="radio" name="q_{{ question.id }}" value="{{ option }}" required />
+                <span>{{ option }}</span>
+              </label>
+            {% endfor %}
           </div>
-        {% endfor %}
+        </div>
 
         <div class="actions">
-          <button type="submit">{{ 'Finish Quiz' if is_last_page else 'Next Category' }}</button>
+          <button type="submit">{{ 'Finish Quiz' if is_last_page else 'Next Question' }}</button>
         </div>
       </form>
     </div>
