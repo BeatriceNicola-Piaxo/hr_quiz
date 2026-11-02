@@ -13,6 +13,8 @@
       --text: #1f2937;
       --muted: #6b7280;
       --border: #e5e7eb;
+      --winner: #eff6ff;
+      --winner-border: #bfdbfe;
     }
 
     * { box-sizing: border-box; }
@@ -50,6 +52,41 @@
       color: var(--muted);
     }
 
+    .winner-box {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 20px;
+      border: 1px solid var(--winner-border);
+      background: var(--winner);
+      border-radius: 12px;
+      margin: 24px 0;
+    }
+
+    .winner-letter {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .winner-title {
+      margin: 0 0 6px;
+      font-size: 1.4rem;
+    }
+
+    .winner-description {
+      margin: 0;
+      color: var(--text);
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -76,6 +113,12 @@
     .summary {
       margin-top: 16px;
       color: var(--muted);
+    }
+
+    .error {
+      margin-top: 16px;
+      color: #b91c1c;
+      font-weight: 600;
     }
 
     button {
@@ -109,29 +152,39 @@
         />
       </div>
       <h1>🎯 Quiz Complete</h1>
-      <p class="subhead">Thanks, {{ name }}! Here is your final score breakdown.</p>
+      <p class="subhead">Thanks, {{ name }}! Here is your final result.</p>
+
+      <div class="winner-box">
+        <div class="winner-letter">{{ winner_letter }}</div>
+        <div>
+          <h2 class="winner-title">{{ winner_title }}</h2>
+          <p class="winner-description">{{ winner_description }}</p>
+        </div>
+      </div>
 
       <table>
         <thead>
           <tr>
-            <th>Category</th>
-            <th>Score</th>
-            <th>Questions</th>
+            <th>Letter</th>
+            <th>Count</th>
           </tr>
         </thead>
         <tbody>
-          {% for row in category_scores %}
+          {% for row in answer_counts %}
             <tr>
-              <td>{{ row.category }}</td>
-              <td>{{ row.score }} / {{ row.total }}</td>
-              <td>{{ row.total }}</td>
+              <td>{{ row.letter }}</td>
+              <td>{{ row.count }}</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <div class="total">Total score: {{ total_score }} / {{ total_questions }}</div>
-      <div class="summary">You answered {{ total_score }} out of {{ total_questions }} questions correctly across all categories.</div>
+      <div class="total">Total questions: {{ total_questions }}</div>
+      <div class="summary">Your strongest match is {{ winner_title }}.</div>
+
+      {% if save_error %}
+        <div class="error">Warning: {{ save_error }}</div>
+      {% endif %}
 
       <a href="{{ url_for('index') }}">
         <button type="button">Return to Start</button>
