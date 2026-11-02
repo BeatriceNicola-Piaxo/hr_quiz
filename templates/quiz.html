@@ -54,19 +54,6 @@
       background: #f8fafc;
     }
 
-    .question-badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--primary);
-      background: #dbeafe;
-      border-radius: 999px;
-      padding: 6px 10px;
-      margin-bottom: 10px;
-    }
-
     .question {
       margin-top: 24px;
     }
@@ -135,9 +122,7 @@
 
       <p class="welcome">Welcome, {{ name }}!</p>
 
-      <div class="question-header">
-        <div class="question-badge">{{ badge_text }}</div>
-      </div>
+      <div class="question-header"></div>
 
       <form action="{{ url_for('submit_quiz_page') }}" method="post">
         <input type="hidden" name="page_num" value="{{ page_num }}" />
