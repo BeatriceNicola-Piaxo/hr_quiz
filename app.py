@@ -1,6 +1,5 @@
 import os
 import json
-import random
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -13,69 +12,65 @@ RESULTS_FILE = BASE_DIR / "results.json"
 GOOGLE_SHEET_ID = os.environ.get("GOOGLE_SHEET_ID")
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
-QUESTION_POOLS = {
-    "Hardware": [
-        {"id": "hw_1", "question": "Which protocol is commonly used to transfer data securely over the web?", "options": ["HTTP", "HTTPS", "FTP"], "answer": "HTTPS"},
-        {"id": "hw_2", "question": "Which language is commonly used to style a web page?", "options": ["HTML", "CSS", "Python"], "answer": "CSS"},
-        {"id": "hw_3", "question": "What is the name of the Python framework commonly used for lightweight web apps?", "options": ["Flask", "Django", "FastAPI"], "answer": "Flask"},
-        {"id": "hw_4", "question": "Which storage solution is often used for spreadsheet-style data in the cloud?", "options": ["Google Sheets", "MongoDB", "SQLite"], "answer": "Google Sheets"},
-        {"id": "hw_5", "question": "What does API stand for?", "options": ["Application Programming Interface", "Automated Program Integration", "Application Process Index"], "answer": "Application Programming Interface"},
-        {"id": "hw_6", "question": "Which HTML element is usually used to create a clickable button?", "options": ["<button>", "<link>", "<input>"], "answer": "<button>"},
-    ],
-    "Software": [
-        {"id": "sw_1", "question": 'What is the effect of the "break" statement when it is used inside a "for" loop?', "options": ["It immediately terminates the execution of the for loop and exits the loop", "It restarts the loop from the beginning", "It skips the current iteration and continues with the next iteration"], "answer": "It immediately terminates the execution of the for loop and exits the loop"},
-        {"id": "sw_2", "question": "Which operator is used to set bit 3 of a register?", "options": ["reg |= (1 << 3);", "reg &= (1 << 3);", "reg ^= (1 << 3);"], "answer": "reg |= (1 << 3);"},
-        {"id": "sw_3", "question": "What is the result of the expression below?\n\nuint8_t x = 0x55;\nx ^= 0xFF;", "options": ["0x00", "0xAA", "0x55"], "answer": "0xAA"},
-        {"id": "sw_4", "question": "Which statement about stack usage in embedded systems is true?", "options": ["Stack size is unlimited", "Stack overflow cannot occur in C", "Recursion may cause stack overflow if unchecked"], "answer": "Recursion may cause stack overflow if unchecked"},
-        {"id": "sw_5", "question": "What is the primary purpose of a Watchdog Timer (WDT)?", "options": ["Measure execution time of Watchdog runnables", "Manage the timer used by the Watchdog SW driver", "Recover a system if it hangs or stops responding"], "answer": "Recover a system if it hangs or stops responding"},
-        {"id": "sw_6", "question": "What is the value of x after executing the code?\n\nuint8_t x = 0x0F;\nx <<= 2;", "options": ["0x11", "0x3C", "0xF0"], "answer": "0x3C"},
-        {"id": "sw_7", "question": "Which operation clears bit 5 in a register?", "options": ["reg |= (1 << 5);", "reg ^= (1 << 5);", "reg &= ~(1 << 5);"], "answer": "reg &= ~(1 << 5);"},
-        {"id": "sw_8", "question": 'What is the output?\n\nuint8_t a = 5;\nuint8_t b = 3;\n\nprintf("%d", a & b);', "options": ["1", "7", "8"], "answer": "1"},
-        {"id": "sw_9", "question": "What does this code do?\n\nuint32_t timeout = 1000;\n\nwhile(timeout--)\n{\n}", "options": ["Infinite loop", "Busy wait delay loop", "Memory initialization"], "answer": "Busy wait delay loop"},
-        {"id": "sw_10", "question": "Which is generally safer for embedded safety-critical systems?", "options": ["Dynamic memory allocation during runtime", "Static memory allocation determined at compile time", "Random memory assignment"], "answer": "Static memory allocation determined at compile time"},
-        {"id": "sw_11", "question": 'What is wrong with the following code?\n\nchar *str;\n\nstrcpy(str, "Hello");', "options": ["Nothing - the code is correct", "str does not point to valid memory before copying", "The string literal should not be used"], "answer": "str does not point to valid memory before copying"},
-    ],
-    "FuSa": [
-        {"id": "fusa_1", "question": "What does ROI stand for?", "options": ["Return on Investment", "Rate of Income", "Revenue over Inventory"], "answer": "Return on Investment"},
-        {"id": "fusa_2", "question": "What is a budget primarily used for?", "options": ["Planning and controlling spending", "Hiring staff", "Writing emails"], "answer": "Planning and controlling spending"},
-        {"id": "fusa_3", "question": "Which term describes the total money coming into a business?", "options": ["Revenue", "Expense", "Liability"], "answer": "Revenue"},
-        {"id": "fusa_4", "question": "What is the purpose of operational KPIs?", "options": ["To track performance and efficiency", "To design logos", "To pay suppliers"], "answer": "To track performance and efficiency"},
-        {"id": "fusa_5", "question": "Which process helps a business check if its cash inflows cover its outflows?", "options": ["Cash flow analysis", "Market research", "Branding"], "answer": "Cash flow analysis"},
-        {"id": "fusa_6", "question": "What is a fixed cost?", "options": ["A cost that stays fairly constant over time", "A one-time sale", "A customer refund"], "answer": "A cost that stays fairly constant over time"},
-    ],
-    "Cyber Security": [
-        {"id": "cyber_1", "question": "What is the main difference between encryption and hashing?", "options": ["Encryption is only used for passwords, while hashing is used for files.", "Encryption is reversible, while hashing is designed to be one-way.", "Hashing is used for network traffic and encryption for storage only."], "answer": "Encryption is reversible, while hashing is designed to be one-way."},
-        {"id": "cyber_2", "question": "In symmetric encryption, what is used to encrypt and decrypt the data?", "options": ["Two completely unrelated passwords.", "The same secret key.", "No key is used."], "answer": "The same secret key."},
-        {"id": "cyber_3", "question": "In asymmetric cryptography, which keys are normally used?", "options": ["Two public keys.", "A public key and a private key.", "One password and one username."], "answer": "A public key and a private key."},
-        {"id": "cyber_4", "question": "Which statement best describes a cryptographic hash function such as SHA-256?", "options": ["It encrypts information that can later be decrypted.", "It creates a fixed-length summary that cannot be reversed.", "It stores a password in plain text."], "answer": "It creates a fixed-length summary that cannot be reversed."},
-        {"id": "cyber_5", "question": "What can a digital signature primarily help verify?", "options": ["That file has been encrypted.", "That nobody is able to copy the file.", "The authenticity and integrity of a document or message."], "answer": "The authenticity and integrity of a document or message."},
-    ],
-    "System": [
-        {"id": "sys_1", "question": "What does NPS stand for?", "options": ["Net Promoter Score", "New Product Survey", "Network Performance Standard"], "answer": "Net Promoter Score"},
-        {"id": "sys_2", "question": "What is the main purpose of customer feedback?", "options": ["To understand needs and improve service", "To increase taxes", "To reduce office time"], "answer": "To understand needs and improve service"},
-        {"id": "sys_3", "question": "Which metric helps measure how quickly a company responds to customers?", "options": ["Response time", "Inventory count", "Operating margin"], "answer": "Response time"},
-        {"id": "sys_4", "question": "What is a common goal of customer support?", "options": ["Resolve problems efficiently and politely", "Train employees for sales", "Increase manufacturing speed"], "answer": "Resolve problems efficiently and politely"},
-        {"id": "sys_5", "question": "Which experience element is most directly tied to customer satisfaction?", "options": ["Service quality", "Office layout", "Accounting rules"], "answer": "Service quality"},
-        {"id": "sys_6", "question": "What is the benefit of personalization in customer experience?", "options": ["It makes interactions more relevant and effective", "It shortens product lines", "It reduces the number of products"], "answer": "It makes interactions more relevant and effective"},
-    ],
-    "Quality": [
-        {"id": "q_1", "question": 'What does "quality" mean for a product or service?', "options": ["To be the most expensive", "To fulfill the client's requirements and expectations", "To receive low demand"], "answer": "To fulfill the client's requirements and expectations"},
-        {"id": "q_2", "question": "You find a problem in a product. What is the best approach?", "options": ["If the client didn't notice it, you ignore it", "You quickly fix it without looking for the root cause", "You investigate the problem, identify the cause, and prevent the issue from recurring"], "answer": "You investigate the problem, identify the cause, and prevent the issue from recurring"},
-        {"id": "q_3", "question": "Who is responsible for quality in an organisation?", "options": ["Only the Quality department", "Managers only", "Everyone involved in developing the product or service"], "answer": "Everyone involved in developing the product or service"},
-        {"id": "q_4", "question": "What is more efficient?", "options": ["To detect the defects at the end", "To prevent the appearance of defects", "To repair the product after delivery"], "answer": "To prevent the appearance of defects"},
-        {"id": "q_5", "question": "Why it's important to find the cause of a problem?", "options": ["To identify the responsible person", "To prevent its recurrence", "To fill in a report"], "answer": "To prevent its recurrence"},
-        {"id": "q_6", "question": "A client reports a problem that appears very rarely. What should we do?", "options": ["Ignore it because it's rare", "Investigate the problem and the associated risk", "Wait until it happens again"], "answer": "Investigate the problem and the associated risk"},
-        {"id": "q_7", "question": "Which of the following is an example of continuous improvement?", "options": ["Repeating the same method regardless of the results", "Analysing the results and improving the process", "Avoiding any change"], "answer": "Analysing the results and improving the process"},
-        {"id": "q_8", "question": "Why clear requirements are important to have before developing a product?", "options": ["They reduce the risk of misunderstandings and errors", "They completely replace testing", "They guarantee the product will be accepted"], "answer": "They reduce the risk of misunderstandings and errors"},
-        {"id": "q_9", "question": "A product passes all the defined tests. Does this automatically mean it is qualitative?", "options": ["Yes, always", "Not necessarily. Tests must cover all requirements and risks", "No, because testing is not needed"], "answer": "Not necessarily. Tests must cover all requirements and risks"},
-        {"id": "q_10", "question": "Which statement best describes quality culture?", "options": ["Quality will find all problems", "If it works, there's no need for quality checks", "Each of us contributes to prevention and continuous improvement"], "answer": "Each of us contributes to prevention and continuous improvement"},
-    ],
-}
+STATIC_QUESTIONS = [
+    {
+        "id": "q_1",
+        "question": "Which protocol is commonly used to transfer data securely over the web?",
+        "options": ["HTTP", "HTTPS", "FTP"],
+        "answer": "HTTPS",
+    },
+    {
+        "id": "q_2",
+        "question": "What does API stand for?",
+        "options": [
+            "Application Programming Interface",
+            "Automated Program Integration",
+            "Application Process Index",
+        ],
+        "answer": "Application Programming Interface",
+    },
+    {
+        "id": "q_3",
+        "question": "Which language is commonly used to style a web page?",
+        "options": ["HTML", "CSS", "Python"],
+        "answer": "CSS",
+    },
+    {
+        "id": "q_4",
+        "question": "What is the name of the Python framework commonly used for lightweight web apps?",
+        "options": ["Flask", "Django", "FastAPI"],
+        "answer": "Flask",
+    },
+    {
+        "id": "q_5",
+        "question": "What does ROI stand for?",
+        "options": ["Return on Investment", "Rate of Income", "Revenue over Inventory"],
+        "answer": "Return on Investment",
+    },
+    {
+        "id": "q_6",
+        "question": "Which operation clears bit 5 in a register?",
+        "options": ["reg |= (1 << 5);", "reg ^= (1 << 5);", "reg &= ~(1 << 5);"],
+        "answer": "reg &= ~(1 << 5);",
+    },
+    {
+        "id": "q_7",
+        "question": "In symmetric encryption, what is used to encrypt and decrypt the data?",
+        "options": ["Two completely unrelated passwords.", "The same secret key.", "No key is used."],
+        "answer": "The same secret key.",
+    },
+    {
+        "id": "q_8",
+        "question": "What does quality mean for a product or service?",
+        "options": [
+            "To be the most expensive",
+            "To fulfill the client's requirements and expectations",
+            "To receive low demand",
+        ],
+        "answer": "To fulfill the client's requirements and expectations",
+    },
+]
 
-QUESTION_COUNT_PER_CATEGORY = 3
-CATEGORY_ORDER = list(QUESTION_POOLS.keys())
-QUESTION_PAGE_COUNT = 8
-ALL_QUESTIONS = [question for pool in QUESTION_POOLS.values() for question in pool]
 BADGE_TEXTS = [
     "1. SYSTEM REQUIREMENTS",
     "2. SOFTWARE REQUIREMENTS",
@@ -92,7 +87,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "quiz-secret-key")
 
 
 def build_question_quiz():
-    return random.sample(ALL_QUESTIONS, k=min(len(ALL_QUESTIONS), QUESTION_PAGE_COUNT))
+    return STATIC_QUESTIONS
 
 
 def get_quiz_session():
