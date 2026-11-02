@@ -114,6 +114,29 @@ BADGE_TEXTS = [
     "8. FINAL CHALLENGE 🚨",
 ]
 
+RESULT_TEXTS = {
+    "A": {
+        "title": "🧠 System Architecture Engineer",
+        "description": "You like defining how the system should work. You enjoy thinking at the big picture, shaping the logic and making sure the product is built on solid foundations.",
+    },
+    "B": {
+        "title": "🔗 Software Integration Engineer",
+        "description": "You like connecting the pieces. You enjoy understanding interfaces, investigating problems and making different components work together.",
+    },
+    "C": {
+        "title": "🧪 Validation Engineer",
+        "description": "You like proving things work. You enjoy designing tests, checking behavior and making sure requirements are verified.",
+    },
+    "D": {
+        "title": "🚗 System Validation Engineer",
+        "description": "You enjoy the full picture. You like testing the complete product in real conditions and making sure everything performs as expected.",
+    },
+    "E": {
+        "title": "🔧 Hardware / Lab Engineer",
+        "description": "You like hands-on work with real hardware. You enjoy measurements, signals and lab testing to understand how the system behaves in practice.",
+    },
+}
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "quiz-secret-key")
 
@@ -140,6 +163,11 @@ def parse_answer_letter(selected_value):
         value = value.split(".", 1)[0]
     letter = value[0].upper()
     return letter if letter.isalpha() else ""
+
+
+def get_winner_letter(counts):
+    letter_order = ["A", "B", "C", "D", "E"]
+    return max(letter_order, key=lambda letter: (counts.get(letter, 0), -letter_order.index(letter)))
 
 
 def get_sheet():
@@ -273,14 +301,17 @@ def submit_quiz_page():
         if letter in counts:
             counts[letter] += 1
 
+    winner_letter = get_winner_letter(counts)
     summary = ", ".join(f"{letter}: {counts[letter]}" for letter in ["A", "B", "C", "D", "E"])
     try:
         save_quiz_result(participant["name"], participant["email"], participant["phone"], summary)
         session["result_saved"] = True
         session["save_error"] = None
+        session["winner_letter"] = winner_letter
     except Exception as exc:
         session["result_saved"] = False
         session["save_error"] = str(exc)
+        session["winner_letter"] = winner_letter
 
     return redirect(url_for("quiz_results"))
 
@@ -301,10 +332,9 @@ def quiz_results():
         if letter in counts:
             counts[letter] += 1
 
-    answer_counts = [
-        {"letter": letter, "count": counts[letter]}
-        for letter in ["A", "B", "C", "D", "E"]
-    ]
+    winner_letter = session.get("winner_letter") or get_winner_letter(counts)
+    winner_info = RESULT_TEXTS.get(winner_letter, RESULT_TEXTS["A"])
+    answer_counts = [{"letter": letter, "count": counts[letter]} for letter in ["A", "B", "C", "D", "E"]]
 
     if not session.get("result_saved"):
         summary = ", ".join(f"{letter}: {counts[letter]}" for letter in ["A", "B", "C", "D", "E"])
@@ -312,9 +342,11 @@ def quiz_results():
             save_quiz_result(participant["name"], participant["email"], participant["phone"], summary)
             session["result_saved"] = True
             session["save_error"] = None
+            session["winner_letter"] = winner_letter
         except Exception as exc:
             session["result_saved"] = False
             session["save_error"] = str(exc)
+            session["winner_letter"] = winner_letter
 
     return render_template(
         "results.html",
@@ -322,6 +354,9 @@ def quiz_results():
         email=participant["email"],
         phone=participant["phone"],
         answer_counts=answer_counts,
+        winner_letter=winner_letter,
+        winner_title=winner_info["title"],
+        winner_description=winner_info["description"],
         total_questions=len(quiz_state),
         save_error=session.get("save_error"),
     )
