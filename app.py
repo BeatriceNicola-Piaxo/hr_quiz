@@ -77,14 +77,14 @@ CATEGORY_ORDER = list(QUESTION_POOLS.keys())
 QUESTION_PAGE_COUNT = 8
 ALL_QUESTIONS = [question for pool in QUESTION_POOLS.values() for question in pool]
 BADGE_TEXTS = [
-    "Dummy page badge 1",
-    "Dummy page badge 2",
-    "Dummy page badge 3",
-    "Dummy page badge 4",
-    "Dummy page badge 5",
-    "Dummy page badge 6",
-    "Dummy page badge 7",
-    "Dummy page badge 8",
+    "1. SYSTEM REQUIREMENTS",
+    "2. SOFTWARE REQUIREMENTS",
+    "3. SOFTWARE ARCHITECTURE",
+    "4. SOFTWARE INTEGRATION",
+    "5. SOFTWARE TEST",
+    "6. SYSTEM TEST",
+    "7. HARDWARE LAB",
+    "8. FINAL CHALLENGE 🚨",
 ]
 
 app = Flask(__name__)
