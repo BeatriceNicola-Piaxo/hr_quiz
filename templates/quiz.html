@@ -67,11 +67,6 @@
       margin-bottom: 10px;
     }
 
-    .question-header h2 {
-      margin: 0;
-      font-size: 1.6rem;
-    }
-
     .question {
       margin-top: 24px;
     }
@@ -141,7 +136,7 @@
       <p class="welcome">Welcome, {{ name }}!</p>
 
       <div class="question-header">
-        <div class="question-badge">Question {{ page_num + 1 }} of {{ total_pages }}</div>
+        <div class="question-badge">{{ badge_text }}</div>
       </div>
 
       <form action="{{ url_for('submit_quiz_page') }}" method="post">
