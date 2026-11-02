@@ -116,24 +116,24 @@ BADGE_TEXTS = [
 
 RESULT_TEXTS = {
     "A": {
-        "title": "🧠 System Architecture Engineer",
-        "description": "You like defining how the system should work. You enjoy thinking at the big picture, shaping the logic and making sure the product is built on solid foundations.",
+        "title": "🧠 Software Architect",
+        "description": "You like seeing the big picture and designing how everything fits together.",
     },
     "B": {
         "title": "🔗 Software Integration Engineer",
         "description": "You like connecting the pieces. You enjoy understanding interfaces, investigating problems and making different components work together.",
     },
     "C": {
-        "title": "🧪 Validation Engineer",
-        "description": "You like proving things work. You enjoy designing tests, checking behavior and making sure requirements are verified.",
+        "title": "🧪 Software Test Engineer",
+        "description": "You like finding problems and proving that software works as expected.",
     },
     "D": {
-        "title": "🚗 System Validation Engineer",
-        "description": "You enjoy the full picture. You like testing the complete product in real conditions and making sure everything performs as expected.",
+        "title": "🚗 System Test Engineer",
+        "description": "You like seeing how the complete system behaves in real-life scenarios.",
     },
     "E": {
-        "title": "🔧 Hardware / Lab Engineer",
-        "description": "You like hands-on work with real hardware. You enjoy measurements, signals and lab testing to understand how the system behaves in practice.",
+        "title": "🔧 Hardware Lab Technician",
+        "description": "You like working hands-on with hardware, measurements and test equipment.",
     },
 }
 
