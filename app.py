@@ -23,7 +23,6 @@ STATIC_QUESTIONS = [
             "D. Test the complete BMS in real-life scenarios. 🚗",
             "E. Work with the battery, sensors and lab equipment. 🔧",
         ],
-        "answer": "HTTPS",
     },
     {
         "id": "q_2",
@@ -35,7 +34,6 @@ STATIC_QUESTIONS = [
             "D. Check how the complete BMS reacts to overheating. 🚗",
             "E. Measure and investigate the temperature signal. 🔧",
         ],
-        "answer": "Application Programming Interface",
     },
     {
         "id": "q_3",
@@ -47,7 +45,6 @@ STATIC_QUESTIONS = [
             "D. Think about complete BMS test scenarios. 🚗",
             "E. Understand how software connects to the hardware. 🔧",
         ],
-        "answer": "CSS",
     },
     {
         "id": "q_4",
@@ -59,7 +56,6 @@ STATIC_QUESTIONS = [
             "D. Check how the issue affects the complete BMS. 🚗",
             "E. Check the related hardware signals and connections. 🔧",
         ],
-        "answer": "Flask",
     },
     {
         "id": "q_5",
@@ -71,7 +67,6 @@ STATIC_QUESTIONS = [
             "D. Test the BMS in complete end-to-end scenarios. 🚗",
             "E. Prepare the hardware setup needed for testing. 🔧",
         ],
-        "answer": "Return on Investment",
     },
     {
         "id": "q_6",
@@ -83,7 +78,6 @@ STATIC_QUESTIONS = [
             "D. Test the complete scenario from detection to protection. 🚗",
             "E. Monitor the hardware signals during the test. 🔧",
         ],
-        "answer": "reg &= ~(1 << 5);",
     },
     {
         "id": "q_7",
@@ -95,7 +89,6 @@ STATIC_QUESTIONS = [
             "D. How the signal affects the complete BMS. 🚗",
             "E. The signal, connections and measurement equipment. 🔧",
         ],
-        "answer": "The same secret key.",
     },
     {
         "id": "q_8",
@@ -107,7 +100,6 @@ STATIC_QUESTIONS = [
             "D. Test the complete BMS scenario end-to-end. 🚗",
             "E. Check the hardware setup and physical signals. 🔧",
         ],
-        "answer": "To fulfill the client's requirements and expectations",
     },
 ]
 
@@ -136,6 +128,18 @@ def get_quiz_session():
     if not participant or not isinstance(quiz_state, list):
         return None
     return participant, quiz_state
+
+
+def parse_answer_letter(selected_value):
+    if selected_value is None:
+        return ""
+    value = str(selected_value).strip()
+    if not value:
+        return ""
+    if "." in value:
+        value = value.split(".", 1)[0]
+    letter = value[0].upper()
+    return letter if letter.isalpha() else ""
 
 
 def get_sheet():
@@ -249,14 +253,12 @@ def submit_quiz_page():
         return redirect(url_for("index"))
 
     question = quiz_state[page_num]
-    score = 0
     selected_answer = request.form.get(f"q_{question['id']}")
-    if selected_answer == question["answer"]:
-        score = 1
+    selected_letter = parse_answer_letter(selected_answer)
 
     session_scores = session.get("scores", {})
     session_scores[str(page_num)] = {
-        "score": score,
+        "letter": selected_letter,
         "total_questions": 1,
     }
     session["scores"] = session_scores
@@ -264,16 +266,16 @@ def submit_quiz_page():
     if page_num < len(quiz_state) - 1:
         return redirect(url_for("quiz_category_page", page_num=page_num + 1))
 
-    total_score = 0
-    total_questions = 0
+    counts = {letter: 0 for letter in ["A", "B", "C", "D", "E"]}
     for index, _ in enumerate(quiz_state):
         score_data = session_scores.get(str(index), {})
-        total_score += score_data.get("score", 0)
-        total_questions += score_data.get("total_questions", 1)
+        letter = score_data.get("letter", "")
+        if letter in counts:
+            counts[letter] += 1
 
-    final_score = f"{total_score} / {total_questions}"
+    summary = ", ".join(f"{letter}: {counts[letter]}" for letter in ["A", "B", "C", "D", "E"])
     try:
-        save_quiz_result(participant["name"], participant["email"], participant["phone"], final_score)
+        save_quiz_result(participant["name"], participant["email"], participant["phone"], summary)
         session["result_saved"] = True
         session["save_error"] = None
     except Exception as exc:
@@ -290,27 +292,24 @@ def quiz_results():
         return redirect(url_for("index"))
 
     participant, quiz_state = data
-    question_scores = []
-    total_score = 0
-    total_questions = 0
+    counts = {letter: 0 for letter in ["A", "B", "C", "D", "E"]}
     session_scores = session.get("scores", {})
 
-    for index, question in enumerate(quiz_state):
+    for index, _ in enumerate(quiz_state):
         score_data = session_scores.get(str(index), {})
-        score = score_data.get("score", 0)
-        page_total = score_data.get("total_questions", 1)
-        question_scores.append({
-            "label": f"Question {index + 1}",
-            "score": score,
-            "total": page_total,
-        })
-        total_score += score
-        total_questions += page_total
+        letter = score_data.get("letter", "")
+        if letter in counts:
+            counts[letter] += 1
+
+    answer_counts = [
+        {"letter": letter, "count": counts[letter]}
+        for letter in ["A", "B", "C", "D", "E"]
+    ]
 
     if not session.get("result_saved"):
-        final_score = f"{total_score} / {total_questions}"
+        summary = ", ".join(f"{letter}: {counts[letter]}" for letter in ["A", "B", "C", "D", "E"])
         try:
-            save_quiz_result(participant["name"], participant["email"], participant["phone"], final_score)
+            save_quiz_result(participant["name"], participant["email"], participant["phone"], summary)
             session["result_saved"] = True
             session["save_error"] = None
         except Exception as exc:
@@ -322,9 +321,8 @@ def quiz_results():
         name=participant["name"],
         email=participant["email"],
         phone=participant["phone"],
-        question_scores=question_scores,
-        total_score=total_score,
-        total_questions=total_questions,
+        answer_counts=answer_counts,
+        total_questions=len(quiz_state),
         save_error=session.get("save_error"),
     )
 
